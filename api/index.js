@@ -1,23 +1,28 @@
 const express = require('express');
 const cors = require('cors');
-
 const app = express();
-app.use(cors()); // Enable CORS to allow requests from your app
 
-// Sample list of dares
+// Enable CORS
+app.use(cors());
+app.use(express.json());
+
 const dares = [
-  "Take a picture with your favorite book!",
-  "Show off your best dance move!",
-  "Take a photo with something that makes you laugh!",
-  "Pretend you're a famous athlete and snap a picture while 'winning'!",
-  // Add more dares as needed
+    "Take a picture with your favorite book!",
+    "Show off your best dance move!",
+    "Take a picture while doing a handstand (or trying to)!",
 ];
+  
 
-// Endpoint to get a random dare
+// Route to get the daily dare
 app.get('/daily-dare', (req, res) => {
-  const randomDare = dares[Math.floor(Math.random() * dares.length)];
-  res.json({ dare: randomDare });
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+    const dayOfYear = Math.floor((new Date() - startOfYear) / (1000 * 60 * 60 * 24));
+    const dare = dares[dayOfYear % dares.length]; // Rotate dares
+    res.json({ dare });
 });
 
-// Export the app as a serverless function
-module.exports = app;
+// Start the server
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
